@@ -1,0 +1,5 @@
+[
+  { "id": 1, "nombre": "Programación" },
+  { "id": 2, "nombre": "Bases de datos" },
+  { "id": 3, "nombre": "Matemáticas" }
+]

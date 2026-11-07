@@ -1,0 +1,8 @@
+[
+  { "id": 1, "titulo": "Taller de listas", "descripcion": "Ejercicios 1 al 5", "fecha": "2026-10-14", "asignaturaId": 1, "estado": "pendiente", "prioridad": "alta" },
+  { "id": 2, "titulo": "Control 2", "descripcion": "Unidad 2", "fecha": "2026-10-20", "asignaturaId": 3, "estado": "en progreso", "prioridad": "alta" },
+  { "id": 3, "titulo": "Informe final", "descripcion": "Modelo entidad-relación", "fecha": "2026-11-05", "asignaturaId": 2, "estado": "completada", "prioridad": "media" },
+  { "id": 4, "titulo": "Presentación de proyecto", "descripcion": "Defensa de 10 minutos", "fecha": "2026-11-12", "asignaturaId": 1, "estado": "pendiente", "prioridad": "media" },
+  { "id": 5, "titulo": "Lectura capítulo 4", "descripcion": "Resumen de una página", "fecha": "2026-10-16", "asignaturaId": 3, "estado": "pendiente", "prioridad": "baja" },
+  { "id": 6, "titulo": "Control 3", "descripcion": "Consultas SQL", "fecha": "2026-10-31", "asignaturaId": 2, "estado": "pendiente", "prioridad": "media" }
+]

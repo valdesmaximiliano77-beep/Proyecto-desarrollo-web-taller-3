@@ -1,0 +1,120 @@
+/* =====================================================
+   PALETA (regla 60-30-10)
+   60% superficies claras · 30% tinta bosque · 10% lima de acento
+   El lima se reserva para lo que pide acción o está activo.
+   Rojo y verde azulado quedan solo para significado (urgente / listo).
+   ===================================================== */
+:root {
+  --tinta: #14231a;        /* 30%: encabezado, texto, elementos fuertes */
+  --tinta-suave: #4a5d4f;  /* texto secundario */
+  --lima: #b4e61d;         /* 10%: acento, botón principal, estado activo */
+  --lima-hover: #a2d312;
+  --lima-suave: #eaf7b9;   /* fondo de selección */
+  --papel: #f5f8ee;        /* 60%: fondo de página */
+  --superficie: #ffffff;   /* 60%: tarjetas y formularios */
+  --borde: #dce4ca;
+  --urgente: #d62839;
+  --listo: #0f766e;
+  --radio: 10px;
+}
+
+body {
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.text-muted { color: var(--tinta-suave) !important; }
+
+/* ===== Encabezado y navegación ===== */
+.app-header { background: var(--tinta); border-bottom: 6px solid var(--lima); }
+.app-header .navbar { display: flex; justify-content: space-between; padding-block: 1rem; }
+.marca { font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; color: #fff; }
+.app-header .nav-link { color: rgba(255, 255, 255, .75); padding: .25rem 0; border-bottom: 2px solid transparent; }
+.app-header .nav-link:hover { color: #fff; }
+.app-header .nav-link.active { color: var(--lima); border-bottom-color: var(--lima); }
+
+/* ===== Indicadores ===== */
+.indicador {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: .8rem 1rem;
+  text-align: center;
+}
+.indicador strong { display: block; font-size: 1.7rem; font-family: Georgia, serif; }
+.indicador.alerta strong { color: var(--urgente); }
+
+.progress { height: 1.4rem; background: #e4ebd3; }
+.progress-bar { background-color: var(--lima); color: var(--tinta); font-size: .85rem; font-weight: 600; }
+
+/* ===== Botones ===== */
+.btn-guardar { background: var(--lima); color: var(--tinta); font-weight: 600; border: 0; }
+.btn-guardar:hover { background: var(--lima-hover); color: var(--tinta); }
+.btn-outline-primary {
+  --bs-btn-color: var(--tinta); --bs-btn-border-color: var(--tinta);
+  --bs-btn-hover-color: var(--lima); --bs-btn-hover-bg: var(--tinta); --bs-btn-hover-border-color: var(--tinta);
+  --bs-btn-active-color: var(--lima); --bs-btn-active-bg: var(--tinta); --bs-btn-active-border-color: var(--tinta);
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--tinta);
+  box-shadow: 0 0 0 .25rem rgba(180, 230, 29, .5);
+}
+.alert-info { --bs-alert-color: var(--tinta); --bs-alert-bg: var(--lima-suave); --bs-alert-border-color: #cfe58a; }
+
+/* ===== Insignias: el peso visual marca la jerarquía ===== */
+.badge { font-weight: 600; }
+.etiqueta { background: #e8eddb; color: var(--tinta-suave); }
+.prio-alta { background: var(--tinta); color: var(--lima); }
+.prio-media { background: transparent; color: var(--tinta); border: 1px solid var(--tinta); }
+.prio-baja { background: #eef1e6; color: var(--tinta-suave); }
+.e-pendiente { background: #fff1c2; color: #6b4e00; }
+.e-progreso { background: #dfeaf3; color: #1f4a6b; }
+.e-completada { background: #cdeee8; color: #0b4f4a; }
+
+/* ===== Tarjeta: el borde izquierdo comunica el estado ===== */
+.actividad {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 6px solid #9aa8b4;
+  border-radius: var(--radio);
+}
+.actividad.completada { border-left-color: var(--listo); opacity: .85; }
+.actividad.urgente { border-left-color: var(--urgente); background: #fff4f5; }
+.actividad.urgente .plazo { color: var(--urgente); font-weight: 600; }
+.actividad h3, .actividad p { overflow-wrap: anywhere; }
+.plazo { font-size: .9rem; }
+
+/* ===== Filtros (Flexbox) ===== */
+.filtros { display: flex; flex-wrap: wrap; gap: .5rem; }
+.filtros select { flex: 1 1 11rem; }
+
+/* ===== Calendario (CSS Grid) ===== */
+.calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem; }
+.calendario .cab { text-align: center; font-size: .8rem; font-weight: 600; color: var(--tinta-suave); padding: .25rem 0; }
+.dia {
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;
+  min-height: 4.2rem; padding: .35rem; text-align: left;
+  background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); color: var(--tinta);
+}
+.dia:hover { border-color: var(--tinta); }
+.dia.feriado { border-style: dashed; border-color: var(--tinta); }
+.dia.seleccionado { background: var(--lima-suave); border: 2px solid var(--tinta); }
+.dia.hoy .numero { background: var(--tinta); color: var(--lima); border-radius: 999px; padding: 0 .45rem; }
+.puntos { display: flex; flex-wrap: wrap; gap: .2rem; }
+.punto { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: var(--tinta); margin: 0 .25rem 0 .75rem; }
+.puntos .punto { margin: 0; }
+.leyenda .punto:first-child { margin-left: 0; }
+.punto.urgente { background: var(--urgente); }
+.punto.listo { background: var(--listo); }
+.leyenda { font-size: .85rem; color: var(--tinta-suave); }
+.muestra-feriado { display: inline-block; width: .9rem; height: .7rem; border: 1px dashed var(--tinta); border-radius: 3px; margin: 0 .25rem 0 .75rem; vertical-align: middle; }
+
+:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+
+/* ===== Celulares ===== */
+@media (max-width: 576px) {
+  .marca { font-size: 1.4rem; }
+  .indicador strong { font-size: 1.4rem; }
+  .filtros { width: 100%; }
+  .dia { min-height: 3.2rem; padding: .25rem; }
+}
