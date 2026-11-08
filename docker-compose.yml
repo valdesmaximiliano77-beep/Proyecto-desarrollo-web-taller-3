@@ -17,6 +17,28 @@ services:
     ports: ["27017:27017"]
     volumes: [mongodata:/data/db]
 
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: agenda_historial
+      CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+    ports: ["8000:8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    ports: ["3000:80"]
+    depends_on: [api]
+
 volumes:
   pgdata:
   mongodata:
