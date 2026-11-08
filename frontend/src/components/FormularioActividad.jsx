@@ -4,7 +4,7 @@ import { rangoFechas } from '../utils/fechas'
 const VACIO = { titulo: '', descripcion: '', fecha: '', asignaturaId: '', estado: 'pendiente', prioridad: 'media' }
 
 // Sirve para crear y para editar: si llega actividadEnEdicion, carga sus datos.
-function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCancelar }) {
+function FormularioActividad({ asignaturas, actividadEnEdicion, guardando, onGuardar, onCancelar }) {
   const [form, setForm] = useState(VACIO)
   const [errores, setErrores] = useState({})
   const { min, max } = rangoFechas()
@@ -26,22 +26,22 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCan
     return nuevos
   }
 
-  const manejarEnvio = (e) => {
-    e.preventDefault()
-    const nuevos = validar()
-    setErrores(nuevos)
-    if (Object.keys(nuevos).length > 0) return
+   const manejarEnvio = async (e) => {
+     e.preventDefault()
+     const nuevos = validar()
+     setErrores(nuevos)
+     if (Object.keys(nuevos).length > 0) return
 
-    onGuardar({
-      titulo: form.titulo.trim(),
-      descripcion: form.descripcion.trim(),
-      fecha: form.fecha,
-      asignaturaId: Number(form.asignaturaId),
-      estado: form.estado,
-      prioridad: form.prioridad,
-    })
-    if (!actividadEnEdicion) setForm(VACIO)
-  }
+     const guardado = await onGuardar({
+       titulo: form.titulo.trim(),
+       descripcion: form.descripcion.trim(),
+       fecha: form.fecha,
+       asignaturaId: Number(form.asignaturaId),
+       estado: form.estado,
+       prioridad: form.prioridad,
+     })
+     if (guardado && !actividadEnEdicion) setForm(VACIO)
+   }
 
   const clase = (campo) => `form-control ${errores[campo] ? 'is-invalid' : ''}`
 
@@ -93,9 +93,9 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCan
         </select>
       </div>
       <div className="col-12 d-flex gap-2">
-        <button type="submit" className="btn btn-guardar">
-          {actividadEnEdicion ? 'Guardar cambios' : 'Agregar actividad'}
-        </button>
+           <button type="submit" className="btn btn-guardar" disabled={guardando}>
+        {guardando ? 'Guardando…' : actividadEnEdicion ? 'Guardar cambios' : 'Agregar actividad'}
+            </button>
         {actividadEnEdicion && (
           <button type="button" className="btn btn-outline-secondary" onClick={onCancelar}>
             Cancelar edición

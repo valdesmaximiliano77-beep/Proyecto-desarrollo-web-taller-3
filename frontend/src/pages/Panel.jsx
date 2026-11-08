@@ -1,11 +1,11 @@
 import ResumenAvance from '../components/ResumenAvance'
 import AlertaFeriados from '../components/AlertaFeriados'
 import TarjetaActividad from '../components/TarjetaActividad'
-import asignaturas from '../data/asignaturas.json'
 import { esUrgente } from '../utils/fechas'
 
-function Panel({ actividades }) {
-  const proximas = actividades
+
+function Panel({ actividades, asignaturas }) {
+    const proximas = actividades
     .filter(esUrgente)
     .sort((a, b) => a.fecha.localeCompare(b.fecha))
 
