@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { crearSubtarea, actualizarSubtarea, eliminarSubtarea } from '../services/agendaApi'
+import { hoyISO } from '../utils/fechas'
 
 // Lista desplegable de subtareas de una tarea. Cada subtarea tiene su propia fecha límite.
 function Subtareas({ tarea, onCambio }) {
@@ -56,7 +57,7 @@ function Subtareas({ tarea, onCambio }) {
             <input className="form-control form-control-sm" style={{ flex: '1 1 8rem' }}
               placeholder="Nueva subtarea" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
             <input className="form-control form-control-sm" style={{ flex: '0 1 9rem' }}
-              type="date" max={tarea.fecha} value={fecha} onChange={(e) => setFecha(e.target.value)}
+              type="date" min={hoyISO()} max={tarea.fecha} value={fecha} onChange={(e) => setFecha(e.target.value)}
               aria-label="Fecha límite de la subtarea" />
             <button
               type="button"
