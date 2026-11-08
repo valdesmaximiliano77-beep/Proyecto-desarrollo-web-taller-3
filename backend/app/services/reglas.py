@@ -1,8 +1,10 @@
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.models import Asignatura, Evaluacion, Tarea
 
 
@@ -13,6 +15,14 @@ class ReglaNegocio(Exception):
         self.mensaje = mensaje
         self.codigo = codigo
 
+def hoy() -> date:
+    """Fecha de hoy en la zona horaria configurada (no la del servidor, que en Docker es UTC)."""
+    return datetime.now(ZoneInfo(settings.zona_horaria)).date()
+
+
+def validar_no_pasada(fecha: date, que: str) -> None:
+    if fecha < hoy():
+        raise ReglaNegocio(f"La fecha de {que} no puede ser anterior a hoy ({hoy()})")
 
 def obtener_o_404(db: Session, modelo, id_: int, nombre: str):
     objeto = db.get(modelo, id_)

@@ -3,12 +3,13 @@ import FormularioActividad from '../components/FormularioActividad'
 import BarraFiltros from '../components/BarraFiltros'
 import TarjetaActividad from '../components/TarjetaActividad'
 
-function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onEliminar }) {
+function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onEliminar, onCambio }) {
   const [filtroAsignatura, setFiltroAsignatura] = useState('todas')
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [filtroPrioridad, setFiltroPrioridad] = useState('todas')
   const [idEdicion, setIdEdicion] = useState(null)
   const [mensaje, setMensaje] = useState(null)
+  const [guardando, setGuardando] = useState(false)
 
   // El mensaje de confirmación desaparece solo a los 4 segundos
   useEffect(() => {
@@ -27,21 +28,45 @@ function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onElim
       (filtroPrioridad === 'todas' || (a.prioridad || 'media') === filtroPrioridad)
   )
 
-  const guardar = (datos) => {
-    if (enEdicion) {
-      onActualizar(enEdicion.id, datos)
-      setIdEdicion(null)
-      setMensaje({ tipo: 'success', texto: 'Cambios guardados.' })
-    } else {
-      onAgregar(datos)
-      setMensaje({ tipo: 'success', texto: 'Actividad agregada.' })
+  const mostrarError = (e) => setMensaje({ tipo: 'danger', texto: e.message })
+
+  // Devuelve true si se guardó, para que el formulario sepa si debe limpiarse
+  const guardar = async (datos) => {
+    setGuardando(true)
+    try {
+      if (enEdicion) {
+        await onActualizar(enEdicion.id, datos)
+        setIdEdicion(null)
+        setMensaje({ tipo: 'success', texto: 'Cambios guardados.' })
+      } else {
+        await onAgregar(datos)
+        setMensaje({ tipo: 'success', texto: 'Actividad agregada.' })
+      }
+      return true
+    } catch (e) {
+      mostrarError(e)
+      return false
+    } finally {
+      setGuardando(false)
     }
   }
 
-  const eliminar = (id) => {
+  const eliminar = async (id) => {
     if (!window.confirm('¿Eliminar esta actividad?')) return
-    onEliminar(id)
-    setMensaje({ tipo: 'warning', texto: 'Actividad eliminada.' })
+    try {
+      await onEliminar(id)
+      setMensaje({ tipo: 'warning', texto: 'Actividad eliminada.' })
+    } catch (e) {
+      mostrarError(e)
+    }
+  }
+
+  const cambiarEstado = async (id, estado) => {
+    try {
+      await onActualizar(id, { estado })
+    } catch (e) {
+      mostrarError(e)
+    }
   }
 
   const editar = (id) => {
@@ -59,6 +84,7 @@ function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onElim
         <FormularioActividad
           asignaturas={asignaturas}
           actividadEnEdicion={enEdicion}
+          guardando={guardando}
           onGuardar={guardar}
           onCancelar={() => setIdEdicion(null)}
         />
@@ -87,9 +113,10 @@ function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onElim
               <TarjetaActividad
                 actividad={a}
                 nombreAsignatura={asignaturas.find((s) => s.id === a.asignaturaId)?.nombre}
-                onCambiarEstado={(id, estado) => onActualizar(id, { estado })}
+                onCambiarEstado={cambiarEstado}
                 onEditar={editar}
                 onEliminar={eliminar}
+                onCambio={onCambio}
               />
             </div>
           ))}

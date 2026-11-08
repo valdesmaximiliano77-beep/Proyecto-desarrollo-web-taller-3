@@ -1,4 +1,5 @@
 import { diasRestantes, textoPlazo, esUrgente } from '../utils/fechas'
+import Subtareas from './Subtareas'
 
 const COLOR_ESTADO = {
   'pendiente': 'e-pendiente',
@@ -7,7 +8,7 @@ const COLOR_ESTADO = {
 }
 
 // Si no se pasan las funciones (onCambiarEstado, onEditar, onEliminar), la tarjeta es de solo lectura.
-function TarjetaActividad({ actividad, nombreAsignatura, onCambiarEstado, onEditar, onEliminar }) {
+function TarjetaActividad({ actividad, nombreAsignatura, onCambiarEstado, onEditar, onEliminar, onCambio }) {
   const completada = actividad.estado === 'completada'
   const urgente = esUrgente(actividad)
   const prioridad = actividad.prioridad || 'media'   // datos antiguos pueden no traerla
@@ -40,7 +41,7 @@ function TarjetaActividad({ actividad, nombreAsignatura, onCambiarEstado, onEdit
             <option value="completada">Completada</option>
           </select>
         )}
-
+        {onCambio && <Subtareas tarea={actividad} onCambio={onCambio} />}
         {(onEditar || onEliminar) && (
           <div className="d-flex gap-2 mt-auto">
             {onEditar && (

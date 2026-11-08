@@ -24,3 +24,10 @@ export function rangoFechas() {
   const anio = new Date().getFullYear()
   return { min: `${anio - 1}-01-01`, max: `${anio + 2}-12-31` }
 }
+
+// Fecha de hoy (AAAA-MM-DD) según el reloj del navegador. No usa toISOString porque esa devuelve la fecha en UTC.
+export function hoyISO() {
+  const d = new Date()
+  const dos = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${dos(d.getMonth() + 1)}-${dos(d.getDate())}`
+}

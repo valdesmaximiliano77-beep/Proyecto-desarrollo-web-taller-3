@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
-import { rangoFechas } from '../utils/fechas'
+import { rangoFechas, hoyISO } from '../utils/fechas'
 
 const VACIO = { titulo: '', descripcion: '', fecha: '', asignaturaId: '', estado: 'pendiente', prioridad: 'media' }
 
 // Sirve para crear y para editar: si llega actividadEnEdicion, carga sus datos.
-function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCancelar }) {
+function FormularioActividad({ asignaturas, actividadEnEdicion, guardando, onGuardar, onCancelar }) {
   const [form, setForm] = useState(VACIO)
   const [errores, setErrores] = useState({})
   const { min, max } = rangoFechas()
+  const hoy = hoyISO()
 
   // Cuando cambia la actividad en edición, el formulario se rellena (o se vacía)
   useEffect(() => {
@@ -22,26 +23,27 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCan
     if (form.titulo.trim().length < 3) nuevos.titulo = 'Escribe un nombre de al menos 3 caracteres.'
     if (!form.fecha) nuevos.fecha = 'Elige una fecha de entrega.'
     else if (form.fecha < min || form.fecha > max) nuevos.fecha = `Elige una fecha entre ${min} y ${max}.`
+    else if (form.fecha < hoy && form.fecha !== actividadEnEdicion?.fecha) nuevos.fecha = 'La fecha no puede ser anterior a hoy.'
     if (!form.asignaturaId) nuevos.asignaturaId = 'Elige una asignatura.'
     return nuevos
   }
 
-  const manejarEnvio = (e) => {
-    e.preventDefault()
-    const nuevos = validar()
-    setErrores(nuevos)
-    if (Object.keys(nuevos).length > 0) return
+   const manejarEnvio = async (e) => {
+     e.preventDefault()
+     const nuevos = validar()
+     setErrores(nuevos)
+     if (Object.keys(nuevos).length > 0) return
 
-    onGuardar({
-      titulo: form.titulo.trim(),
-      descripcion: form.descripcion.trim(),
-      fecha: form.fecha,
-      asignaturaId: Number(form.asignaturaId),
-      estado: form.estado,
-      prioridad: form.prioridad,
-    })
-    if (!actividadEnEdicion) setForm(VACIO)
-  }
+     const guardado = await onGuardar({
+       titulo: form.titulo.trim(),
+       descripcion: form.descripcion.trim(),
+       fecha: form.fecha,
+       asignaturaId: Number(form.asignaturaId),
+       estado: form.estado,
+       prioridad: form.prioridad,
+     })
+     if (guardado && !actividadEnEdicion) setForm(VACIO)
+   }
 
   const clase = (campo) => `form-control ${errores[campo] ? 'is-invalid' : ''}`
 
@@ -55,7 +57,7 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCan
       </div>
       <div className="col-md-3">
         <label htmlFor="fecha" className="form-label">Fecha de entrega</label>
-        <input id="fecha" name="fecha" type="date" min={min} max={max} className={clase('fecha')}
+        <input id="fecha" name="fecha" type="date" min={actividadEnEdicion ? min : hoy} max={max} className={clase('fecha')}
           value={form.fecha} onChange={manejarCambio} />
         <div className="invalid-feedback">{errores.fecha}</div>
       </div>
@@ -93,9 +95,9 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, onGuardar, onCan
         </select>
       </div>
       <div className="col-12 d-flex gap-2">
-        <button type="submit" className="btn btn-guardar">
-          {actividadEnEdicion ? 'Guardar cambios' : 'Agregar actividad'}
-        </button>
+           <button type="submit" className="btn btn-guardar" disabled={guardando}>
+        {guardando ? 'Guardando…' : actividadEnEdicion ? 'Guardar cambios' : 'Agregar actividad'}
+            </button>
         {actividadEnEdicion && (
           <button type="button" className="btn btn-outline-secondary" onClick={onCancelar}>
             Cancelar edición
