@@ -4,13 +4,14 @@ import TarjetaActividad from '../components/TarjetaActividad'
 import { esUrgente } from '../utils/fechas'
 
 const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+const COLOR_EVALUACION = '#6f42c1'
 const dos = (n) => String(n).padStart(2, '0')
 const aISO = (anio, mes, dia) => `${anio}-${dos(mes + 1)}-${dos(dia)}`   // mes: 0 a 11
 
 // Color del punto según la situación de la actividad
 const claseDePunto = (a) => (a.estado === 'completada' ? 'listo' : esUrgente(a) ? 'urgente' : 'normal')
 
-function Calendario({ actividades, asignaturas }) {
+function Calendario({ actividades, asignaturas, evaluaciones = [] }) {
   const hoy = new Date()
   const hoyISO = aISO(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
 
@@ -33,13 +34,16 @@ function Calendario({ actividades, asignaturas }) {
   }
 
   const delDia = (iso) => actividades.filter((a) => a.fecha === iso)
+  const evaluacionesDelDia = (iso) => evaluaciones.filter((e) => e.fecha === iso)
   const feriadoDe = (iso) => feriados.find((f) => f.fecha === iso)
+  const nombreAsignatura = (id) => asignaturas.find((s) => s.id === id)?.nombre
 
   const tituloMes = new Date(anio, mes, 1).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' })
   const tituloDia = new Date(diaSeleccionado + 'T00:00:00').toLocaleDateString('es-CL', {
     weekday: 'long', day: 'numeric', month: 'long',
   })
   const delDiaSeleccionado = delDia(diaSeleccionado)
+  const evaluacionesSeleccionadas = evaluacionesDelDia(diaSeleccionado)
   const feriadoSeleccionado = feriadoDe(diaSeleccionado)
 
   return (
@@ -65,6 +69,7 @@ function Calendario({ actividades, asignaturas }) {
             if (dia === null) return <div key={`vacio-${i}`} />
             const iso = aISO(anio, mes, dia)
             const lista = delDia(iso)
+            const evals = evaluacionesDelDia(iso)
             const feriado = feriadoDe(iso)
             return (
               <button
@@ -73,11 +78,14 @@ function Calendario({ actividades, asignaturas }) {
                 className={`dia ${iso === hoyISO ? 'hoy' : ''} ${iso === diaSeleccionado ? 'seleccionado' : ''} ${feriado ? 'feriado' : ''}`}
                 onClick={() => setDiaSeleccionado(iso)}
                 aria-pressed={iso === diaSeleccionado}
-                aria-label={`${dia}: ${lista.length} entrega(s)${feriado ? `, feriado ${feriado.nombre}` : ''}`}
+                aria-label={`${dia}: ${lista.length} entrega(s), ${evals.length} evaluación(es)${feriado ? `, feriado ${feriado.nombre}` : ''}`}
               >
                 <span className="numero">{dia}</span>
                 <span className="puntos">
-                  {lista.slice(0, 4).map((a) => <span key={a.id} className={`punto ${claseDePunto(a)}`} />)}
+                  {lista.slice(0, 3).map((a) => <span key={a.id} className={`punto ${claseDePunto(a)}`} />)}
+                  {evals.slice(0, 1).map((e) => (
+                    <span key={`e${e.id}`} className="punto" style={{ background: COLOR_EVALUACION }} />
+                  ))}
                 </span>
               </button>
             )
@@ -88,6 +96,7 @@ function Calendario({ actividades, asignaturas }) {
           <span className="punto normal" /> pendiente
           <span className="punto urgente" /> vence pronto
           <span className="punto listo" /> completada
+          <span className="punto" style={{ background: COLOR_EVALUACION }} /> evaluación
           <span className="muestra-feriado" /> feriado
         </p>
       </section>
@@ -97,16 +106,18 @@ function Calendario({ actividades, asignaturas }) {
         {feriadoSeleccionado && (
           <div className="alert alert-info py-2">Feriado: {feriadoSeleccionado.nombre}</div>
         )}
-        {delDiaSeleccionado.length === 0 ? (
+        {evaluacionesSeleccionadas.map((e) => (
+          <div key={e.id} className="alert alert-secondary py-2">
+            <strong>Evaluación:</strong> {e.titulo} · {nombreAsignatura(e.asignatura_id)} · {e.ponderacion}%
+          </div>
+        ))}
+        {delDiaSeleccionado.length === 0 && evaluacionesSeleccionadas.length === 0 ? (
           <p className="text-muted">No hay entregas este día.</p>
         ) : (
           <div className="row g-3">
             {delDiaSeleccionado.map((a) => (
               <div className="col-12 col-md-6 col-lg-4" key={a.id}>
-                <TarjetaActividad
-                  actividad={a}
-                  nombreAsignatura={asignaturas.find((s) => s.id === a.asignaturaId)?.nombre}
-                />
+                <TarjetaActividad actividad={a} nombreAsignatura={nombreAsignatura(a.asignaturaId)} />
               </div>
             ))}
           </div>

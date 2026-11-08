@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { rangoFechas } from '../utils/fechas'
+import { rangoFechas, hoyISO } from '../utils/fechas'
 
 const VACIO = { titulo: '', descripcion: '', fecha: '', asignaturaId: '', estado: 'pendiente', prioridad: 'media' }
 
@@ -8,6 +8,7 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, guardando, onGua
   const [form, setForm] = useState(VACIO)
   const [errores, setErrores] = useState({})
   const { min, max } = rangoFechas()
+  const hoy = hoyISO()
 
   // Cuando cambia la actividad en edición, el formulario se rellena (o se vacía)
   useEffect(() => {
@@ -22,6 +23,7 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, guardando, onGua
     if (form.titulo.trim().length < 3) nuevos.titulo = 'Escribe un nombre de al menos 3 caracteres.'
     if (!form.fecha) nuevos.fecha = 'Elige una fecha de entrega.'
     else if (form.fecha < min || form.fecha > max) nuevos.fecha = `Elige una fecha entre ${min} y ${max}.`
+    else if (form.fecha < hoy && form.fecha !== actividadEnEdicion?.fecha) nuevos.fecha = 'La fecha no puede ser anterior a hoy.'
     if (!form.asignaturaId) nuevos.asignaturaId = 'Elige una asignatura.'
     return nuevos
   }
@@ -55,7 +57,7 @@ function FormularioActividad({ asignaturas, actividadEnEdicion, guardando, onGua
       </div>
       <div className="col-md-3">
         <label htmlFor="fecha" className="form-label">Fecha de entrega</label>
-        <input id="fecha" name="fecha" type="date" min={min} max={max} className={clase('fecha')}
+        <input id="fecha" name="fecha" type="date" min={actividadEnEdicion ? min : hoy} max={max} className={clase('fecha')}
           value={form.fecha} onChange={manejarCambio} />
         <div className="invalid-feedback">{errores.fecha}</div>
       </div>
