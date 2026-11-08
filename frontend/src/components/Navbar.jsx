@@ -5,6 +5,8 @@ const ENLACES = [
   { ruta: '/actividades', texto: 'Actividades' },
   { ruta: '/calendario', texto: 'Calendario' },
   { ruta: '/asignaturas', texto: 'Asignaturas' },
+  { ruta: '/evaluaciones', texto: 'Evaluaciones' },
+  { ruta: '/historial', texto: 'Historial' },
 ]
 
 function Navbar() {

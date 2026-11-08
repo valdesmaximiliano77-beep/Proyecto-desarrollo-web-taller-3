@@ -1,23 +1,29 @@
 import { Routes, Route } from 'react-router-dom'
 import useCarga from './hooks/useCarga'
 import {
-  listarTareas, crearTarea, actualizarTarea, eliminarTarea, listarAsignaturas,
+  listarTareas, crearTarea, actualizarTarea, eliminarTarea,
+  listarAsignaturas, listarPeriodos, listarEvaluaciones,
 } from './services/agendaApi'
 import Navbar from './components/Navbar'
 import Panel from './pages/Panel'
 import Actividades from './pages/Actividades'
 import Asignaturas from './pages/Asignaturas'
 import Calendario from './pages/Calendario'
+import Evaluaciones from './pages/Evaluaciones'
+import Historial from './pages/Historial'
 
-// Los datos ahora vienen de la API. Las acciones esperan al servidor y, si este rechaza algo
+// Los datos vienen de la API. Las acciones esperan al servidor y, si este rechaza algo
 // (por ejemplo, una regla de negocio), el error llega a quien las llamó para mostrarlo.
 function App() {
   const tareas = useCarga(listarTareas)
   const asignaturas = useCarga(listarAsignaturas)
+  const periodos = useCarga(listarPeriodos)
+  const evaluaciones = useCarga(listarEvaluaciones)
+  const todos = [tareas, asignaturas, periodos, evaluaciones]
 
-  const recargarTodo = () => Promise.all([tareas.recargar(), asignaturas.recargar()])
-  const error = tareas.error || asignaturas.error
-  const primeraCarga = tareas.datos === null || asignaturas.datos === null
+  const recargarTodo = () => Promise.all(todos.map((x) => x.recargar()))
+  const error = todos.find((x) => x.error)?.error
+  const primeraCarga = todos.some((x) => x.datos === null)
 
   const agregar = async (datos) => { await crearTarea(datos); await tareas.recargar() }
   const actualizar = async (id, cambios) => { await actualizarTarea(id, cambios); await tareas.recargar() }
@@ -41,7 +47,10 @@ function App() {
   } else {
     contenido = (
       <Routes>
-        <Route path="/" element={<Panel actividades={tareas.datos} asignaturas={asignaturas.datos} />} />
+        <Route
+          path="/"
+          element={<Panel actividades={tareas.datos} asignaturas={asignaturas.datos} evaluaciones={evaluaciones.datos} />}
+        />
         <Route
           path="/actividades"
           element={
@@ -57,12 +66,37 @@ function App() {
         />
         <Route
           path="/asignaturas"
-          element={<Asignaturas actividades={tareas.datos} asignaturas={asignaturas.datos} />}
+          element={
+            <Asignaturas
+              actividades={tareas.datos}
+              asignaturas={asignaturas.datos}
+              periodos={periodos.datos}
+              evaluaciones={evaluaciones.datos}
+              onCambio={recargarTodo}
+            />
+          }
+        />
+        <Route
+          path="/evaluaciones"
+          element={
+            <Evaluaciones
+              evaluaciones={evaluaciones.datos}
+              asignaturas={asignaturas.datos}
+              onCambio={evaluaciones.recargar}
+            />
+          }
         />
         <Route
           path="/calendario"
-          element={<Calendario actividades={tareas.datos} asignaturas={asignaturas.datos} />}
+          element={
+            <Calendario
+              actividades={tareas.datos}
+              asignaturas={asignaturas.datos}
+              evaluaciones={evaluaciones.datos}
+            />
+          }
         />
+        <Route path="/historial" element={<Historial />} />
       </Routes>
     )
   }
