@@ -9,3 +9,4 @@ bcrypt
 PyJWT
 pytest
 httpx
+tzdata

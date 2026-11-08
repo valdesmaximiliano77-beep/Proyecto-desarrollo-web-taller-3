@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 
@@ -10,7 +11,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base, get_db
 from app.main import app
-from app.services import historial
+from app.services import historial, reglas
 
 
 @pytest.fixture()
@@ -30,9 +31,12 @@ def client(monkeypatch):
     app.dependency_overrides[get_db] = get_db_pruebas
     eventos = []
     monkeypatch.setattr(historial, "registrar", lambda *args, **kw: eventos.append(args))
+    # Se fija "hoy" para que las pruebas no dependan de la fecha real en que se ejecutan
+    monkeypatch.setattr(reglas, "hoy", lambda: date(2026, 8, 3))
 
     c = TestClient(app)
     c.eventos = eventos
+    c.monkeypatch = monkeypatch
     yield c
     app.dependency_overrides.clear()
 
@@ -111,3 +115,29 @@ def test_codigo_de_asignatura_duplicado(client):
 def test_recurso_inexistente(client):
     assert client.get("/tareas").status_code == 200
     assert client.patch("/tareas/999", json={"estado": "completada"}).status_code == 404
+
+
+def test_no_se_crean_tareas_con_fecha_pasada(client):
+    a = preparar(client)
+    client.monkeypatch.setattr(reglas, "hoy", lambda: date(2026, 11, 8))
+    r = nueva_tarea(client, a["id"], fecha="2026-11-07")
+    assert r.status_code == 400
+    assert "anterior a hoy" in r.json()["detail"]
+    assert nueva_tarea(client, a["id"], fecha="2026-11-08").status_code == 201  # hoy sí vale
+
+
+def test_tarea_vencida_se_puede_completar_pero_no_reprogramar_al_pasado(client):
+    a = preparar(client)
+    t = nueva_tarea(client, a["id"], fecha="2026-11-02").json()      # creada cuando aún era futuro
+    client.monkeypatch.setattr(reglas, "hoy", lambda: date(2026, 11, 8))  # ahora está vencida
+    assert client.patch(f"/tareas/{t['id']}", json={"estado": "completada"}).status_code == 200
+    assert client.patch(f"/tareas/{t['id']}", json={"fecha": "2026-11-03"}).status_code == 400
+    assert client.patch(f"/tareas/{t['id']}", json={"fecha": "2026-11-02"}).status_code == 200  # misma fecha: no cambia
+
+
+def test_no_se_crean_subtareas_con_fecha_pasada(client):
+    a = preparar(client)
+    t = nueva_tarea(client, a["id"], fecha="2026-11-20").json()
+    client.monkeypatch.setattr(reglas, "hoy", lambda: date(2026, 11, 8))
+    assert nueva_subtarea(client, t["id"], fecha="2026-11-05").status_code == 400
+    assert nueva_subtarea(client, t["id"], fecha="2026-11-10").status_code == 201
