@@ -1,8 +1,6 @@
-@"
 .env
 .venv/
 __pycache__/
 node_modules/
 dist/
 *.db
-"@ | Set-Content -Path .gitignore -Encoding ascii
