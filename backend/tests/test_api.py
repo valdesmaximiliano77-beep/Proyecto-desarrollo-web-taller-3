@@ -141,3 +141,11 @@ def test_no_se_crean_subtareas_con_fecha_pasada(client):
     client.monkeypatch.setattr(reglas, "hoy", lambda: date(2026, 11, 8))
     assert nueva_subtarea(client, t["id"], fecha="2026-11-05").status_code == 400
     assert nueva_subtarea(client, t["id"], fecha="2026-11-10").status_code == 201
+
+def test_se_puede_eliminar_una_subtarea(client):
+    a = preparar(client)
+    t = nueva_tarea(client, a["id"]).json()
+    s = nueva_subtarea(client, t["id"]).json()
+    assert client.delete(f"/tareas/subtareas/{s['id']}").status_code == 204
+    assert client.delete(f"/tareas/subtareas/{s['id']}").status_code == 404
+    assert client.get("/tareas").json()[0]["subtareas"] == []
