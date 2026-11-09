@@ -122,3 +122,12 @@ def actualizar_subtarea(subtarea_id: int, datos: SubtareaUpdate, db: Session = D
         historial.registrar("eventos_planificacion", usuario.id, "subtarea", subtarea.id, accion,
                             {"tarea_id": subtarea.tarea_id})
     return subtarea
+
+@router.delete("/subtareas/{subtarea_id}", status_code=204)
+def eliminar_subtarea(subtarea_id: int, db: Session = Depends(get_db), usuario=Depends(usuario_actual)):
+    subtarea = obtener_o_404(db, Subtarea, subtarea_id, "Subtarea")
+    titulo, tarea_id = subtarea.titulo, subtarea.tarea_id
+    db.delete(subtarea)
+    db.commit()
+    historial.registrar("actividad", usuario.id, "subtarea", subtarea_id, "eliminada",
+                        {"titulo": titulo, "tarea_id": tarea_id})
