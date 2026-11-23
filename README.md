@@ -114,7 +114,38 @@ Las pruebas usan SQLite en memoria y simulan MongoDB; la integración real se ve
 
 **Limitaciones:** sin autenticación · sin migraciones (se usa `create_all`) · los períodos pueden solaparse · la interfaz no edita períodos ni asignaturas (la API sí).
 
-## 12. Uso de Inteligencia Artificial
+## 12. Aplicación móvil (Hito 4)
+
+Segundo cliente del sistema, hecho con **React Native (Expo)** en la carpeta [`mobile/`](mobile/). Consume la misma API REST del Hito 3, sin backend ni base de datos propios: todo cambio hecho desde el móvil queda en PostgreSQL, se registra en el historial de MongoDB y se ve en la aplicación web.
+
+```mermaid
+flowchart LR
+  W[React web :3000] -->|HTTP JSON| A[FastAPI :8000]
+  M[React Native / Expo] -->|HTTP JSON| A
+  A --> P[(PostgreSQL)]
+  A --> H[(MongoDB)]
+```
+
+**Funcionalidades (caso 3.2, agenda académica personal):**
+- **Inicio:** resumen y actividades de los próximos 7 días.
+- **Agenda:** tareas y evaluaciones agrupadas por día, con filtros por estado.
+- **Asignaturas:** lista y detalle con avance, evaluaciones y tareas.
+- **Tarea:** cambiar su estado y marcar subtareas, con mensajes de confirmación y de error del backend.
+
+**Ejecución rápida** (con la API levantada con `docker compose up`):
+
+```bash
+cd mobile
+npm install
+cp .env.example .env     # en PowerShell: Copy-Item .env.example .env
+npx expo start
+```
+| Inicio | Agenda | Asignaturas |
+|---|---|---|
+| ![Inicio](mobile/capturas/image.png) | ![Agenda](mobile/capturas/image1.png) | ![Asignaturas](mobile/capturas/image2.png) |
+
+
+## 13. Uso de Inteligencia Artificial
 
 **Herramienta:** Claude (Anthropic). La usé como apoyo para diseñar el modelo, entender conceptos, corregir errores y adelantar tareas repetitivas. Probé, revisé y adapté todo lo que integré.
 
@@ -125,3 +156,8 @@ Las pruebas usan SQLite en memoria y simulan MongoDB; la integración real se ve
 | Corregir error al eliminar subtareas | «Al pulsar Quitar en una subtarea no se elimina y Swagger responde error. ¿Qué falla?» | Detectó que faltaba el endpoint `DELETE /tareas/subtareas/{id}` y propuso agregarlo con su registro en el historial. | Probé el botón Quitar en la aplicación, en Swagger y ejecuté `pytest`. | Cómo el frontend y el backend deben coincidir en rutas y por qué un 404/405 apunta a una ruta inexistente. |
 | Tareas repetitivas | «Genera los Dockerfile, el `docker-compose.yml`, datos de prueba y pruebas básicas para este proyecto.» | Borradores de configuración Docker, `seed.py` y `tests/test_api.py`. | Los ejecuté, corregí lo que falló y verifiqué que todo levantara con `docker compose up --build`. | Qué hace cada servicio, por qué la API usa el host `postgres` y no `localhost`. |
 | Documentación y defensa | «Ayúdame con un borrador del README y un guion para la demo.» | Borrador de README, guion y preguntas probables. | Lo reduje y adapté a mi proyecto. | Cómo documentar arquitectura, modelo y limitaciones. |
+
+**En qué me ayudó la IA:**
+- **Revisión:** comprobar que lo desarrollado cumplía el enunciado (funcionalidades obligatorias, entrega y demostración) y que los endpoints usados coincidían con los de mi API del Hito 3.
+- **Resolver problemas al ejecutar:** el emulador de Android que tardaba o no arrancaba, y el error "No se pudo conectar con el servidor" con `10.0.2.2:8000`. Que era un error meramente de docker que por accidente se cerro pero se veia como si estuviera abierto y funcionando api, postgreSQL y MongoDB.
+- **Documentación:** orientación para redactar el README y organizar las capturas.
