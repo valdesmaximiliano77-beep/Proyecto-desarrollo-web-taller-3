@@ -3,8 +3,5 @@
 __pycache__/
 node_modules/
 dist/
-<<<<<<< Updated upstream
 *.db
-=======
-*.db
->>>>>>> Stashed changes
+.idea/
