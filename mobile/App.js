@@ -7,7 +7,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AgendaScreen from './src/screens/AgendaScreen';
 import AsignaturaDetalleScreen from './src/screens/AsignaturaDetalleScreen';
 import AsignaturasScreen from './src/screens/AsignaturasScreen';
-import CrearTareaScreen from './src/screens/CrearTareaScreen';
 import InicioScreen from './src/screens/InicioScreen';
 import TareaDetalleScreen from './src/screens/TareaDetalleScreen';
 import { colores } from './src/theme';
@@ -35,7 +34,6 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen name="Pestanas" component={Pestanas} options={{ headerShown: false }} />
           <Stack.Screen name="TareaDetalle" component={TareaDetalleScreen} options={{ title: 'Tarea' }} />
-          <Stack.Screen name="CrearTarea" component={CrearTareaScreen} options={{ title: 'Nueva tarea' }} />
           <Stack.Screen
             name="AsignaturaDetalle"
             component={AsignaturaDetalleScreen}

@@ -13,6 +13,3 @@ export const actualizarSubtarea = (id, cambios) =>
 
 export const listarEvaluaciones = (asignaturaId) =>
   peticion(asignaturaId ? `/evaluaciones?asignatura_id=${asignaturaId}` : '/evaluaciones');
-
-// Crea una tarea nueva (POST /tareas). El backend valida las fechas y reglas.
-export const crearTarea = (datos) => peticion('/tareas', { metodo: 'POST', cuerpo: datos });
