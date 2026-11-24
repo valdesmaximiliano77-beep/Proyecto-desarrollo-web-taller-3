@@ -51,7 +51,12 @@ export default function AgendaScreen({ navigation }) {
 
   return (
     <SafeAreaView style={estilos.pantalla} edges={['top']}>
-      <Text style={estilos.titulo}>Agenda</Text>
+      <View style={estilos.encabezado}>
+        <Text style={estilos.titulo}>Agenda</Text>
+        <Pressable style={estilos.botonNueva} onPress={() => navigation.navigate('CrearTarea')}>
+          <Text style={estilos.botonNuevaTexto}>+ Nueva tarea</Text>
+        </Pressable>
+      </View>
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={estilos.filtros}>
           {FILTROS.map((f) => (
@@ -91,7 +96,10 @@ export default function AgendaScreen({ navigation }) {
 
 const estilos = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: colores.fondo },
-  titulo: { fontSize: 26, fontWeight: '800', color: colores.texto, paddingHorizontal: 16, paddingTop: 16 },
+  encabezado: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 16 },
+  titulo: { fontSize: 26, fontWeight: '800', color: colores.texto },
+  botonNueva: { backgroundColor: colores.primario, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999 },
+  botonNuevaTexto: { color: '#fff', fontWeight: '700', fontSize: 13 },
   filtros: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: colores.tarjeta, borderWidth: 1, borderColor: colores.borde },
   chipActivo: { backgroundColor: colores.primario, borderColor: colores.primario },
