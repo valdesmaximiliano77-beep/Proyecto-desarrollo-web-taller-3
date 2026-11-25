@@ -75,23 +75,25 @@ function Asignaturas({ actividades, asignaturas, periodos, evaluaciones, onCambi
 
   return (
     <>
-      {mensaje && <div className={`alert alert-${mensaje.tipo}`} role="status">{mensaje.texto}</div>}
+      {mensaje && <div className={`alert alert-${mensaje.tipo} aviso`} role="status">{mensaje.texto}</div>}
 
       <section className="mb-4" aria-labelledby="titulo-periodos">
         <h2 id="titulo-periodos" className="h5 mb-3">Períodos académicos</h2>
-        <form className="row g-2 mb-3" onSubmit={guardarPeriodo}>
+        <form className="row g-2 mb-3 align-items-end" onSubmit={guardarPeriodo}>
           <div className="col-md-3">
-            <input className="form-control" name="nombre" placeholder="Nombre (ej. 2027-1)"
-              value={periodo.nombre} onChange={cambiarPeriodo} required minLength={2} maxLength={50}
-              aria-label="Nombre del período" />
+            <label className="form-label" htmlFor="periodo-nombre">Nombre del período</label>
+            <input id="periodo-nombre" className="form-control" name="nombre" placeholder="Ej. 2027-1"
+              value={periodo.nombre} onChange={cambiarPeriodo} required minLength={2} maxLength={50} />
           </div>
           <div className="col-md-3">
-            <input className="form-control" type="date" name="fecha_inicio" value={periodo.fecha_inicio}
-              onChange={cambiarPeriodo} required aria-label="Fecha de inicio" />
+            <label className="form-label" htmlFor="periodo-inicio">Fecha de inicio</label>
+            <input id="periodo-inicio" className="form-control" type="date" name="fecha_inicio" value={periodo.fecha_inicio}
+              onChange={cambiarPeriodo} required />
           </div>
           <div className="col-md-3">
-            <input className="form-control" type="date" name="fecha_fin" value={periodo.fecha_fin}
-              onChange={cambiarPeriodo} required aria-label="Fecha de término" />
+            <label className="form-label" htmlFor="periodo-fin">Fecha de término</label>
+            <input id="periodo-fin" className="form-control" type="date" name="fecha_fin" value={periodo.fecha_fin}
+              onChange={cambiarPeriodo} required />
           </div>
           <div className="col-md-3">
             <button className="btn btn-guardar w-100" disabled={guardando}>
@@ -118,28 +120,29 @@ function Asignaturas({ actividades, asignaturas, periodos, evaluaciones, onCambi
 
       <section aria-labelledby="titulo-asignaturas">
         <h2 id="titulo-asignaturas" className="h5 mb-3">Mis asignaturas</h2>
-        <form className="row g-2 mb-3" onSubmit={guardarAsignatura}>
+        <form className="row g-2 mb-3 align-items-end" onSubmit={guardarAsignatura}>
           <div className="col-md-3">
-            <select className="form-select" name="periodo_id" value={asignatura.periodo_id}
-              onChange={cambiarAsignatura} required aria-label="Período de la asignatura">
-              <option value="">Período…</option>
+            <label className="form-label" htmlFor="asig-periodo">Período</label>
+            <select id="asig-periodo" className="form-select" name="periodo_id" value={asignatura.periodo_id}
+              onChange={cambiarAsignatura} required>
+              <option value="">Elige…</option>
               {periodos.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
             </select>
           </div>
           <div className="col-md-3">
-            <input className="form-control" name="nombre" placeholder="Nombre de la asignatura"
-              value={asignatura.nombre} onChange={cambiarAsignatura} required minLength={2} maxLength={100}
-              aria-label="Nombre de la asignatura" />
+            <label className="form-label" htmlFor="asig-nombre">Nombre</label>
+            <input id="asig-nombre" className="form-control" name="nombre"
+              value={asignatura.nombre} onChange={cambiarAsignatura} required minLength={2} maxLength={100} />
           </div>
           <div className="col-md-2">
-            <input className="form-control" name="codigo" placeholder="Código"
-              value={asignatura.codigo} onChange={cambiarAsignatura} required minLength={2} maxLength={20}
-              aria-label="Código" />
+            <label className="form-label" htmlFor="asig-codigo">Código</label>
+            <input id="asig-codigo" className="form-control" name="codigo" placeholder="Ej. BD201" autoCapitalize="characters"
+              value={asignatura.codigo} onChange={cambiarAsignatura} required minLength={2} maxLength={20} />
           </div>
           <div className="col-md-2">
-            <input className="form-control" name="docente" placeholder="Docente (opcional)"
-              value={asignatura.docente} onChange={cambiarAsignatura} maxLength={100}
-              aria-label="Docente" />
+            <label className="form-label" htmlFor="asig-docente">Docente</label>
+            <input id="asig-docente" className="form-control" name="docente" placeholder="Opcional" autoCapitalize="words"
+              value={asignatura.docente} onChange={cambiarAsignatura} maxLength={100} />
           </div>
           <div className="col-md-2">
             <button className="btn btn-guardar w-100" disabled={guardando || periodos.length === 0}>

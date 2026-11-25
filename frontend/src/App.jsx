@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import useCarga from './hooks/useCarga'
+import useRecordatorios from './hooks/useRecordatorios'
+import { avisarSiEsProxima } from './services/recordatorios'
 import {
   listarTareas, crearTarea, actualizarTarea, eliminarTarea,
   listarAsignaturas, listarPeriodos, listarEvaluaciones,
@@ -19,13 +21,19 @@ function App() {
   const asignaturas = useCarga(listarAsignaturas)
   const periodos = useCarga(listarPeriodos)
   const evaluaciones = useCarga(listarEvaluaciones)
+  const recordatorios = useRecordatorios(tareas.datos, evaluaciones.datos, asignaturas.datos)
   const todos = [tareas, asignaturas, periodos, evaluaciones]
 
   const recargarTodo = () => Promise.all(todos.map((x) => x.recargar()))
   const error = todos.find((x) => x.error)?.error
   const primeraCarga = todos.some((x) => x.datos === null)
 
-  const agregar = async (datos) => { await crearTarea(datos); await tareas.recargar() }
+  const nombreAsignatura = (id) => asignaturas.datos?.find((a) => a.id === id)?.nombre
+  const agregar = async (datos) => {
+    const nueva = await crearTarea(datos)
+    avisarSiEsProxima(nueva, nombreAsignatura(nueva.asignaturaId))
+    await tareas.recargar()
+  }
   const actualizar = async (id, cambios) => { await actualizarTarea(id, cambios); await tareas.recargar() }
   const eliminar = async (id) => { await eliminarTarea(id); await tareas.recargar() }
 
@@ -34,7 +42,7 @@ function App() {
     contenido = (
       <div className="alert alert-danger" role="alert">
         {error}
-        <button className="btn btn-sm btn-outline-danger ms-3" onClick={recargarTodo}>Reintentar</button>
+        <button className="btn btn-sm btn-outline-danger d-block mt-2" onClick={recargarTodo}>Reintentar</button>
       </div>
     )
   } else if (primeraCarga) {
@@ -49,7 +57,14 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Panel actividades={tareas.datos} asignaturas={asignaturas.datos} evaluaciones={evaluaciones.datos} />}
+          element={
+            <Panel
+              actividades={tareas.datos}
+              asignaturas={asignaturas.datos}
+              evaluaciones={evaluaciones.datos}
+              recordatorios={recordatorios}
+            />
+          }
         />
         <Route
           path="/actividades"

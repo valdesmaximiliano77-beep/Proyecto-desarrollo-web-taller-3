@@ -17,7 +17,7 @@ function Navbar() {
     <header className="app-header">
       <nav className="navbar container" aria-label="Navegación principal">
         <span className="marca">Entregas</span>
-        <ul className="navbar-nav flex-row flex-wrap gap-3">
+        <ul className="navbar-nav menu">
           {ENLACES.map((e) => (
             <li className="nav-item" key={e.ruta}>
               <NavLink to={e.ruta} end={e.exacto} className={clase}>{e.texto}</NavLink>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo para la variante debug (laboratorio): permite la API local por HTTP sin cifrar.
+     Se fusiona con src/main/AndroidManifest.xml; la variante release sigue exigiendo HTTPS. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true" />
+</manifest>

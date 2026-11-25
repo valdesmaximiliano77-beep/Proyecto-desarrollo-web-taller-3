@@ -23,7 +23,8 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       MONGO_URL: mongodb://mongo:27017
       MONGO_DB: agenda_historial
-      CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+      # http(s)://localhost es el origen de la app Android (Capacitor)
+      CORS_ORIGINS: http://localhost:3000,http://localhost:5173,http://localhost,https://localhost
     ports: ["8000:8000"]
     depends_on:
       postgres:

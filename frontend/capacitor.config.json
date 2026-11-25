@@ -1,0 +1,19 @@
+{
+  "appId": "cl.unab.entregas",
+  "appName": "Entregas",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_entregas",
+      "iconColor": "#14231a"
+    },
+    "SystemBars": {
+      "style": "DARK",
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}
