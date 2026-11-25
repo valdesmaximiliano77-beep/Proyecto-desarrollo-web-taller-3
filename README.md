@@ -101,7 +101,7 @@ La API crea las tablas y carga datos de prueba al iniciar. `docker compose down 
 Solo se suben los `.env.example`.
 - **`/.env`**: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `VITE_API_URL`.
 - **`/backend/.env`** (API sin Docker): `DATABASE_URL`, `MONGO_URL`, `MONGO_DB`, `CORS_ORIGINS`.
-- **`/frontend/.env`**: `VITE_API_URL`.
+- **`/frontend/.env`**: `VITE_API_URL`, `VITE_API_ANDROID`.
 
 ## 11. Pruebas y limitaciones
 
@@ -155,9 +155,37 @@ npx expo start
 | Entender MongoDB | «No entiendo MongoDB: ¿qué es una colección y un documento, y cómo lo uso desde Python para un historial?» | Explicación de colecciones, documentos y PyMongo, con ejemplos de `actividad` y `eventos_planificacion`. | Lo integré en `services/historial.py` y comprobé en la página Historial que los eventos se guardan. | Cuándo conviene un modelo documental y por qué no duplica SQL. |
 | Corregir error al eliminar subtareas | «Al pulsar Quitar en una subtarea no se elimina y Swagger responde error. ¿Qué falla?» | Detectó que faltaba el endpoint `DELETE /tareas/subtareas/{id}` y propuso agregarlo con su registro en el historial. | Probé el botón Quitar en la aplicación, en Swagger y ejecuté `pytest`. | Cómo el frontend y el backend deben coincidir en rutas y por qué un 404/405 apunta a una ruta inexistente. |
 | Tareas repetitivas | «Genera los Dockerfile, el `docker-compose.yml`, datos de prueba y pruebas básicas para este proyecto.» | Borradores de configuración Docker, `seed.py` y `tests/test_api.py`. | Los ejecuté, corregí lo que falló y verifiqué que todo levantara con `docker compose up --build`. | Qué hace cada servicio, por qué la API usa el host `postgres` y no `localhost`. |
+| Integración de Capacitor (Android) | «Tengo que hacer esto» + guía de la asignatura en Word. | Configuración de Capacitor, adaptación móvil, conexión con la API, recordatorios, pruebas en el emulador y borrador de la memoria. | _Pendiente: completar con mi revisión._ | _Pendiente: completar._ |
 | Documentación y defensa | «Ayúdame con un borrador del README y un guion para la demo.» | Borrador de README, guion y preguntas probables. | Lo reduje y adapté a mi proyecto. | Cómo documentar arquitectura, modelo y limitaciones. |
 
 **En qué me ayudó la IA:**
 - **Revisión:** comprobar que lo desarrollado cumplía el enunciado (funcionalidades obligatorias, entrega y demostración) y que los endpoints usados coincidían con los de mi API del Hito 3.
 - **Resolver problemas al ejecutar:** el emulador de Android que tardaba o no arrancaba, y el error "No se pudo conectar con el servidor" con `10.0.2.2:8000`. Que era un error meramente de docker que por accidente se cerro pero se veia como si estuviera abierto y funcionando api, postgreSQL y MongoDB.
 - **Documentación:** orientación para redactar el README y organizar las capturas.
+
+## 14. Aplicación Android con Capacitor
+
+La web React de `frontend/` empaquetada como app Android, sin reescribir componentes. Es distinta de la app Expo de la sección 12: aquí se reutiliza la misma interfaz web. Detalle, pruebas y problemas en la [memoria de integración](frontend/docs/memoria-capacitor.md).
+
+Requisitos: Node 22 o superior, JDK 21, Android Studio con un emulador y la API levantada (`docker compose up --build`).
+
+```bash
+cd frontend
+npm install
+cp .env.example .env     # en PowerShell: Copy-Item .env.example .env
+npm run build
+npx cap sync android
+npx cap open android     # y pulsar Run
+```
+
+**Funcionalidad adicional:** recordatorios con notificaciones locales. Avisan al agregar algo que vence hoy o mañana, y desde las 9:00 del día anterior y del mismo día. Se activan en el Panel.
+
+Tras cada cambio en React hay que repetir `npm run build` y `npx cap sync android`. No se ejecuta `cap init` ni `cap add android`: ya están hechos.
+
+| Entorno | URL de la API | Variable |
+|---|---|---|
+| Navegador | `http://localhost:8000` | `VITE_API_URL` |
+| Emulador | `http://10.0.2.2:8000` | `VITE_API_ANDROID` |
+| Teléfono | `http://IP_DEL_PC:8000` | `VITE_API_ANDROID` |
+
+El HTTP sin cifrar es solo para el laboratorio: está permitido únicamente en la variante debug. Para publicar se necesita una API con HTTPS y quitar `androidScheme` de `capacitor.config.json`.

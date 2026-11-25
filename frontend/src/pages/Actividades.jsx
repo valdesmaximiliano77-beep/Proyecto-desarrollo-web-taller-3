@@ -79,7 +79,7 @@ function Actividades({ actividades, asignaturas, onAgregar, onActualizar, onElim
       <section aria-labelledby="titulo-form">
         <h2 id="titulo-form" className="h5">{enEdicion ? 'Editar actividad' : 'Nueva actividad'}</h2>
         {mensaje && (
-          <div className={`alert alert-${mensaje.tipo}`} role="status">{mensaje.texto}</div>
+          <div className={`alert alert-${mensaje.tipo} aviso`} role="status">{mensaje.texto}</div>
         )}
         <FormularioActividad
           asignaturas={asignaturas}

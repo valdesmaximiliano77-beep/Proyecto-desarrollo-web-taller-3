@@ -53,15 +53,15 @@ function Historial() {
       )}
       {!cargando && !error && datos?.length > 0 && (
         <div className="table-responsive">
-          <table className="table table-sm align-middle">
+          <table className="table table-sm align-middle tabla-tarjetas">
             <thead><tr><th>Fecha</th><th>Elemento</th><th>Acción</th><th>Detalle</th></tr></thead>
             <tbody>
               {datos.map((d) => (
                 <tr key={d.id}>
-                  <td className="text-nowrap">{aFecha(d.fecha).toLocaleString('es-CL')}</td>
-                  <td>{d.entidad} #{d.entidad_id}</td>
-                  <td>{d.accion.replaceAll('_', ' ')}</td>
-                  <td className="small text-muted">{resumen(d.detalle)}</td>
+                  <td className="text-nowrap" data-label="Fecha">{aFecha(d.fecha).toLocaleString('es-CL')}</td>
+                  <td data-label="Elemento">{d.entidad} #{d.entidad_id}</td>
+                  <td data-label="Acción">{d.accion.replaceAll('_', ' ')}</td>
+                  <td className="small text-muted" data-label="Detalle">{resumen(d.detalle)}</td>
                 </tr>
               ))}
             </tbody>

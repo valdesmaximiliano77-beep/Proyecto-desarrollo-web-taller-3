@@ -34,15 +34,17 @@ function Subtareas({ tarea, onCambio }) {
           <ul className="list-unstyled mb-2">
             {tarea.subtareas.map((s) => (
               <li key={s.id} className="d-flex align-items-center gap-2 small">
-                <input
-                  type="checkbox"
-                  checked={s.completada}
-                  onChange={() => ejecutar(() => actualizarSubtarea(s.id, { completada: !s.completada }))}
-                  aria-label={`Marcar ${s.titulo}`}
-                />
-                <span className={s.completada ? 'text-decoration-line-through text-muted' : ''}>
-                  {s.titulo} · {s.fecha}
-                </span>
+                <label className="subtarea">
+                  <input
+                    type="checkbox"
+                    checked={s.completada}
+                    onChange={() => ejecutar(() => actualizarSubtarea(s.id, { completada: !s.completada }))}
+                    aria-label={`Marcar ${s.titulo}`}
+                  />
+                  <span className={s.completada ? 'text-decoration-line-through text-muted' : ''}>
+                    {s.titulo} · {s.fecha}
+                  </span>
+                </label>
                 <button
                   type="button"
                   className="btn btn-sm btn-link text-danger ms-auto p-0"
@@ -53,12 +55,15 @@ function Subtareas({ tarea, onCambio }) {
               </li>
             ))}
           </ul>
-          <div className="d-flex flex-wrap gap-1">
+          <div className="d-flex flex-wrap align-items-end gap-1">
             <input className="form-control form-control-sm" style={{ flex: '1 1 8rem' }}
-              placeholder="Nueva subtarea" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
-            <input className="form-control form-control-sm" style={{ flex: '0 1 9rem' }}
-              type="date" min={hoyISO()} max={tarea.fecha} value={fecha} onChange={(e) => setFecha(e.target.value)}
-              aria-label="Fecha límite de la subtarea" />
+              placeholder="Nueva subtarea" aria-label="Nueva subtarea" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+            <label className="small text-muted" style={{ flex: '0 1 9rem' }}>
+              Fecha límite
+              <input className="form-control form-control-sm"
+                type="date" min={hoyISO()} max={tarea.fecha} value={fecha} onChange={(e) => setFecha(e.target.value)}
+                aria-label="Fecha límite de la subtarea" />
+            </label>
             <button
               type="button"
               className="btn btn-sm btn-outline-primary"

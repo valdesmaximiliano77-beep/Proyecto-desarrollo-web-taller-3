@@ -1,9 +1,10 @@
 import ResumenAvance from '../components/ResumenAvance'
+import Recordatorios from '../components/Recordatorios'
 import AlertaFeriados from '../components/AlertaFeriados'
 import TarjetaActividad from '../components/TarjetaActividad'
 import { esUrgente, diasRestantes, textoPlazo, hoyISO } from '../utils/fechas'
 
-function Panel({ actividades, asignaturas, evaluaciones = [] }) {
+function Panel({ actividades, asignaturas, evaluaciones = [], recordatorios }) {
   const nombreAsignatura = (id) => asignaturas.find((s) => s.id === id)?.nombre
 
   const proximas = actividades
@@ -19,6 +20,8 @@ function Panel({ actividades, asignaturas, evaluaciones = [] }) {
   return (
     <>
       <ResumenAvance actividades={actividades} />
+
+      <Recordatorios {...recordatorios} />
 
       <section className="mb-4" aria-labelledby="titulo-proximas">
         <h2 id="titulo-proximas" className="h5">Próximas a vencer</h2>
